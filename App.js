@@ -1,21 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeScreen from './screen/HomeScreen'
+import AddCityScreen from './screen/AddCityScreen'
+import ChangeName from './components/ChangeName'
+import {init} from '@rematch/core'
+import {user} from './model/nameModel'
+import {meteo} from './model/meteoModel'
+import {Provider} from 'react-redux'
+import 'redux';
+
+const store = init({
+  models:{user, meteo} 
+});
+
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+
+    <Provider store={store}>
+
+      <NavigationContainer>
+        <Tab.Navigator>
+          <Tab.Screen name="HomeScreen" component={HomeScreen} />
+          <Tab.Screen name="AddCityScreen" component={AddCityScreen} />
+          <Tab.Screen name="ChangeName" component={ChangeName} />
+        </Tab.Navigator>
+      </NavigationContainer>
+
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
