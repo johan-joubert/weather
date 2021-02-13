@@ -1,13 +1,12 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { ImageBackground, ActivityIndicator, SafeAreaView, StyleSheet, View, TextInput, Button, FlatList, Text, Image, ScrollView, ListItem } from 'react-native'
 import { getWeatherFromOPMWithSearch } from '../API/OWMApi'
 import { getWeatherTimeFromOPMWithSearch } from '../API/TimeOWMApi'
-import Icon from 'react-native-ionicons'
+import { Icon } from 'react-native-elements'
 import Moment from 'moment'
 import { connect } from 'react-redux'
 import Header from './Header'
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import GeoLocation from './GeoLocation'
 
 
 
@@ -54,88 +53,144 @@ class Search extends React.Component {
         console.log(this.state.isLoading);
         Moment.locale('fr');
 
-        const renderItem = ({item}) => (
+        const renderItem = ({ item }) => (
             <View>
                 <Text>
                     {item.dt_txt}
                 </Text>
                 <Image
                     source={{ uri: "https://openweathermap.org/img/wn/" + item.weather[0].icon + ".png", }} style={{ width: 100, height: 100 }}
-                />        
+                />
             </View>
-        )  
-            
-        const iconSearch = <FontAwesomeIcon icon={faSearch} onPress={() => this._loadWeather()} style={{color: 'blue'}} />;
+        )
 
         const sourceImgSky = require("../media/sky.jpg");
+        const sourceImgsunWhiteClouds = require("../media/sun_white_clouds.jpg");
+        const sourceImgWhiteClouds = require("../media/white_clouds.jpg");
         const sourceImgClouds = require("../media/clouds.jpg");
 
+        const bg = (i) => {
+            if(i == "01d") {
+                return sourceImgSky;
+            } else if (i == "02d") {
+                return sourceImgsunWhiteClouds;
+            }
+             else {
+                return sourceImgClouds;
+            }
+        }
+        
+        // const bg = (i) => {
+        //     switch (i) {
+        //         case '01d':
+        //             sourceImgSky;
+        //             break;
+        //         case '02d':
+        //             sourceImgsunWhiteClouds;
+        //             break;
+        //         case '03d':
+        //             sourceImgWhiteClouds;
+        //             break;
+        //         case '04d':
+        //             sourceImgClouds;
+        //             break;
+        //         default:
+        //             sourceImgSky;
+        //     }
+        // }
+
         return (
-
-            <View>
-                
-                <View style={{flexDirection: "row", justifyContent:"center"}}>
-
-                    <TextInput placeholder='Ville' onChangeText={(text) => this._searchTextInputChanged(text)} style={styles.textinput} onSubmitEditing={() => this._loadWeather()}/>
-
-                    <Button color="none" title="rechercher" onPress={() => this._loadWeather()} />
-
-                </View>
-
-                {this.state.forecast !== null ? (
-                    <ImageBackground source={this.state.forecast.weather[0].icon == "01d" ? sourceImgSky : sourceImgClouds }>
-
+            
+            <View style={styles.main_container}>
+                {this.state.forecast == null ? (
                     <View style={styles.main_container}>
-                        <View >
-                            <Text>Bonjour <Header /></Text>
-                            <Text style={styles.dayDate}>{Moment().format('dddd d MMMM')}</Text>
-                            <Text style={styles.town}>{this.state.forecast.name}</Text>
+                        <View style={{backgroundColor:"blue", flexDirection: "row", justifyContent: "space-around"}}>
+                            <Header />
+                            <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                                <TextInput placeholder='Ville' onChangeText={(text) => this._searchTextInputChanged(text)} style={styles.textinput} onSubmitEditing={() => this._loadWeather()} />
+                                <Icon style={{alignItems: "center", margin: "auto"}} name='search' type='material' onPress={() => this._loadWeather()}/>
+                            </View>
+                        </View>
+                        <View style={{flexDirection:"column", justifyContent:"center"}}>
+                        <View style={{height:"50vh"}}>
+                        </View>
+                        <GeoLocation/>
 
                         </View>
-                        <View >
-                            <Image
-                                source={{ uri: "https://openweathermap.org/img/wn/" + this.state.forecast.weather[0].icon + ".png", }} style={{ width: 100, height: 100 }}
-                                />
-                        </View>
-                        <View >
-                            <Text >{Math.round(this.state.forecast.main.temp)} °C</Text>
-                            <Text>{this.state.forecast.weather[0].description}</Text>
-                        </View>
-                        <Text style={{ textAlign: 'center', padding: 10 }}>Vitesse du vent : {Math.round((this.state.forecast.wind.speed * 3.6))} km/h</Text>
-                        <Text>
-                            Levé du soleil : {Moment().startOf('day')
-                                .seconds(this.state.forecast.sys.sunrise)
-                                .format('H:mm:ss')}
-                        </Text>
-                        <Text>
-                            Couché du soleil : {Moment().startOf('day')
-                                .seconds(this.state.forecast.sys.sunset)
-                                .format('H:mm:ss')}
-                        </Text>
 
+                    </View>) : 
+
+                (this.state.forecast ? (
+                    <ImageBackground
+                        source={
+                            bg(this.state.forecast.weather[0].icon)
+                        }
+
+                    >
+                        <Header />
                         <View>
-                            <SafeAreaView>
+                            <GeoLocation/>
 
-                            <ScrollView horizontal={true}>
-                                    <FlatList 
-                                        horizontal
-                                        pagingEnabled={true}
-                                        showsHorizontalScrollIndicator={false}
-                                        legacyImplementation={false}
-                                        data={this.state.time.list}
-                                        renderItem={renderItem}
-                                        keyExtractor={item => item.dt_txt}
+                        </View>
+
+                        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+
+                            <TextInput style={styles.textinput} placeholder='Ville' onChangeText={(text) => this._searchTextInputChanged(text)}  onSubmitEditing={() => this._loadWeather()} />
+
+                            <Icon  style={{alignSelf: "center", margin: "auto"}} name='search' type='material' onPress={() => this._loadWeather()}/>
+
+                        </View>
+
+
+                        <View style={styles.main_container}>
+                            <View >
+                                <Text style={styles.dayDate}>{Moment().format('dddd d MMMM')}</Text>
+                                <Text style={styles.town}>{this.state.forecast.name}</Text>
+
+                            </View>
+                            <View >
+                                <Image
+                                    source={{ uri: "https://openweathermap.org/img/wn/" + this.state.forecast.weather[0].icon + ".png", }} style={{ width: 100, height: 100 }}
+                                />
+                            </View>
+                            <View >
+                                <Text >{Math.round(this.state.forecast.main.temp)} °C</Text>
+                                <Text>{this.state.forecast.weather[0].description}</Text>
+                            </View>
+                            <Text style={{ textAlign: 'center', padding: 10 }}>Vitesse du vent : {Math.round((this.state.forecast.wind.speed * 3.6))} km/h</Text>
+                            <Text>
+                                Levé du soleil : {Moment().startOf('day')
+                                    .seconds(this.state.forecast.sys.sunrise)
+                                    .format('H:mm:ss')}
+                            </Text>
+                            <Text>
+                                Couché du soleil : {Moment().startOf('day')
+                                    .seconds(this.state.forecast.sys.sunset)
+                                    .format('H:mm:ss')}
+                            </Text>
+
+                            <View>
+                                <SafeAreaView>
+
+                                    <ScrollView horizontal={true}>
+                                        <FlatList
+                                            horizontal
+                                            pagingEnabled={true}
+                                            showsHorizontalScrollIndicator={false}
+                                            legacyImplementation={false}
+                                            data={this.state.time.list}
+                                            renderItem={renderItem}
+                                            keyExtractor={item => item.dt_txt}
                                         />
-                            </ScrollView>
+                                    </ScrollView>
 
-                            </SafeAreaView>
-                        </View>                        
-                        
-                    </View>
-                </ImageBackground>
-                ) : (<Text style={{}}>Choisissez une ville</Text>)}
+                                </SafeAreaView>
+                            </View>
 
-                {this._displayLoading()}
+                        </View>
+                    </ImageBackground>
+                ) : (<Text style={{}}>Choisissez une ville</Text>))}
+
             </View>
 
         )
@@ -144,18 +199,19 @@ class Search extends React.Component {
 
 const styles = StyleSheet.create({
     main_container: {
-        marginTop: 50,
-        margin: "auto",
-        flex: 1,
-        height: "100vh"
+        height: "100vh",
     },
+
     textinput: {
         marginLeft: 5,
         marginRight: 5,
-        height: 50,
+        height: 20,
         borderColor: '#000000',
         borderWidth: 1,
-        paddingLeft: 5
+        paddingLeft: 5,
+        alignSelf: "center",
+        textAlign: "center",
+        width: "70%"
     },
     dayDate: {
         textTransform: "capitalize",

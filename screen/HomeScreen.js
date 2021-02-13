@@ -19,16 +19,10 @@ const ChangeName = (props) => {
     })
 
     const [userName, setName] = useState("");
-
-
     
         return (
             <View>
-                <Header/>
-                <GeoLocation />
                 <Search />
-                <CitiesList />
-
             </View>
         )
     

@@ -14,11 +14,16 @@ const Header = (props) => {
     })
 
     const [userName, setName] = useState("");
+    var d = new Date();
+    var n = d.getHours();
+    console.log(n)
+
 
         return (
             <View style={styles.header}>
 
-                <Text>{userName}</Text>
+                {n < 17 ? <Text style={{fontWeight: "bold"}}>Bonjour {"\n"} {userName}</Text> : <Text style={{fontWeight: "bold"}}>Bonsoir {"\n"} {userName}</Text>}
+                
 
             </View>
         )
@@ -32,6 +37,6 @@ export default connect(({user})=> ({user}))(Header);
 
 const styles = StyleSheet.create({
     header:  {
-        backgroundColor : 'blue',
+        textAlign: 'center',
     }
 })

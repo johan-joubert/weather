@@ -40,20 +40,23 @@ const GeoLocation = (props) => {
     } = props;
 
     if (geoloc.main) {
-        console.log(geoloc.main.temp);
+        console.log(geoloc);
     }
 
     return (
-        <View >
+        <View styles={styles.container2}>
+
             {geoloc.main ? 
-                <View>
-                    <Text>Votre position</Text>
-                    <Text>{geoloc.name}</Text>
+                <View styles={styles.container2}>
+                    <View style={{flexDirection: 'row', justifyContent:"space-around", alignItems: 'center', margin:"auto"}}>
+                        <Text>{geoloc.name}</Text>
+                            <Text>{geoloc.weather[0].description}</Text>
+                            <Text>{geoloc.main.temp}</Text>
+
                     <Image
                         source={{ uri: "https://openweathermap.org/img/wn/" + geoloc.weather[0].icon + ".png", }} style={{ width: 100, height: 100 }}
-                    />
-
-                            
+                        />       
+                    </View>
                 </View>
                 :
                 <View>
@@ -69,3 +72,21 @@ const GeoLocation = (props) => {
 
 import { connect } from 'react-redux';
 export default connect(({ meteo }) => ({ meteo }))(GeoLocation);
+
+const styles = StyleSheet.create({
+    contain: {
+        backgroundColor: "rgba(254,254,254,0.1)",
+        width: "80%",
+        margin: "auto",
+        flexDirection: "column",
+        justifyContent: "center",
+    },
+    contain2: {
+        backgroundColor: "rgba(254,254,254,0.1)",
+        width: "80%",
+        margin: "auto",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "100vh"
+    }
+})
